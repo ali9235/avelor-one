@@ -1,0 +1,17 @@
+{
+  "errors": [],
+  "checks": [
+    "WebGL scene rendered",
+    "3D screen target touch",
+    "3D screen page + heater touch",
+    "dock",
+    "green charging state",
+    "heater command",
+    "cap interlock",
+    "yellow warning state",
+    "exploded view",
+    "internal view",
+    "undock",
+    "mobile width"
+  ]
+}

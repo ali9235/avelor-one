@@ -1,0 +1,41 @@
+const {chromium}=require('playwright');
+const fs=require('fs');
+(async()=>{
+fs.mkdirSync('test-results',{recursive:true});
+const browser=await chromium.launch({headless:true,...(process.env.AVELOR_BROWSER_EXECUTABLE?{executablePath:process.env.AVELOR_BROWSER_EXECUTABLE}:{}),args:process.platform==='win32'?['--enable-webgl','--use-angle=d3d11']:[]});
+try {
+const context=await browser.newContext({viewport:{width:1440,height:960},...(process.env.AVELOR_RECORD?{recordVideo:{dir:'test-results/video-final',size:{width:1440,height:960}}}:{})});
+const page=await context.newPage();const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE ERROR',e.message);});
+await page.goto('http://127.0.0.1:5190',{waitUntil:'domcontentloaded',timeout:20000});console.log('Loaded');await page.waitForTimeout(4000);
+await page.screenshot({path:'test-results/desktop.png',timeout:15000});console.log('Captured');
+await page.mouse.click(716,345);await page.waitForTimeout(250);
+if(await page.locator('#target').inputValue()!=='46')throw Error('3D display plus control failed');
+await page.mouse.click(695,310);await page.waitForTimeout(200);
+await page.mouse.click(695,345);await page.waitForTimeout(600);
+if(!(await page.locator('.primary').textContent()).includes('Stop heating'))throw Error('3D display power page failed');
+await page.locator('.primary').click();
+await page.getByRole('button',{name:'Place on charging zone'}).click();await page.waitForTimeout(500);
+if(!await page.getByText('Wireless connection',{exact:true}).isVisible())throw Error('Dock failed');
+await page.waitForSelector('.charging-status[data-mode="charging"]');await page.waitForTimeout(1200);
+await page.screenshot({path:'test-results/charging-green.png'});
+await page.locator('.primary').click();await page.waitForTimeout(1500);
+await page.getByRole('button',{name:'Open cap',exact:false}).click();await page.waitForTimeout(500);
+if(await page.locator('.status').textContent()!=='Cap open')throw Error('Cap interlock failed');
+await page.waitForSelector('.charging-status[data-mode="warning"]');await page.waitForTimeout(1200);
+await page.screenshot({path:'test-results/charging-warning.png'});
+await page.getByRole('button',{name:'Close cap',exact:false}).click();
+await page.getByRole('button',{name:'Exploded view'}).click();
+await page.getByRole('button',{name:'Inside ONE'}).click();await page.waitForTimeout(1200);
+await page.screenshot({path:'test-results/exploded.png'});
+await page.getByRole('button',{name:'Engineering',exact:true}).click();await page.locator('.engineering').scrollIntoViewIfNeeded();
+await page.screenshot({path:'test-results/engineering.png'});
+await page.getByRole('button',{name:'Exploded view'}).click();
+await page.getByRole('button',{name:'Move off charging zone'}).click();await page.waitForTimeout(400);
+if(!await page.getByText('Away from charging zone',{exact:true}).isVisible())throw Error('Undock failed');
+await page.setViewportSize({width:390,height:844});await page.getByRole('button',{name:'Experience',exact:true}).click();await page.evaluate(()=>scrollTo(0,0));await page.waitForTimeout(1000);
+await page.screenshot({path:'test-results/mobile.png',fullPage:true});
+if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('Mobile overflow');
+fs.writeFileSync('test-results/browser.json',JSON.stringify({errors,checks:['WebGL scene rendered','3D screen target touch','3D screen page + heater touch','dock','green charging state','heater command','cap interlock','yellow warning state','exploded view','internal view','undock','mobile width']},null,2));
+await context.close();if(errors.length)throw Error(errors.join('\n'));console.log('Browser interaction checks passed');
+} finally {await browser.close();}
+})();

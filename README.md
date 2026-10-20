@@ -6,7 +6,7 @@
 
 A 500 mL smart water vessel explored through industrial design, interactive 3D and an inspectable energy model.
 
-[Explore the live experience](https://avelor-one.jollydrum64.chatgpt.site) · [Engineering analysis](docs/ENGINEERING.md) · [Validation](docs/VALIDATION.md)
+[Explore the live experience](https://ali9235.github.io/avelor-one/) · [Engineering analysis](docs/ENGINEERING.md) · [Validation](docs/VALIDATION.md)
 
 ![AVELOR ONE: the working application rendered in Chromium](media/experience.png)
 
@@ -80,6 +80,8 @@ pnpm dev --port 5190
 ```
 
 Open `http://127.0.0.1:5190`. On Windows, `./Start-Avelor.ps1` also starts an already installed checkout. For production output, run `pnpm build`; serve `dist/` with a static host.
+
+The public portfolio experience is hosted on [GitHub Pages](https://ali9235.github.io/avelor-one/). `pnpm run build:pages` sets Vite's asset base to `/avelor-one/`; the default build remains suitable for a domain root. The Pages workflow tests, builds and deploys updates pushed to `main`, following [GitHub's custom-workflow setup](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
 ```sh
 pnpm test

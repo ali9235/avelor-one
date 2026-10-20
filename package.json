@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
+    "build:pages": "tsc -b && vite build --mode github-pages",
     "test": "vitest run",
     "test:browser": "node tools/browser-check.cjs"
   },

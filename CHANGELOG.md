@@ -1,5 +1,11 @@
 # Changelog
 
+## Hosting update — 2026-10-20
+
+- Added GitHub Pages deployment at the maintainer's portfolio URL.
+- Added a dedicated build mode for correct asset paths under `/avelor-one/`.
+- Added a test/build/deploy workflow for updates to `main`.
+
 ## 0.2.0 — 2026-10-20
 
 - Added green charging and amber attention states around the desk zone.
